@@ -2,6 +2,7 @@ import pygame
 from blinker import Blinker
 from action import CursorDirection
 
+
 class Cursor:
     def __init__(self, theme):
         self.line = 0
@@ -9,6 +10,9 @@ class Cursor:
         self.theme = theme
         self.blinker = Blinker()
         self.rect = pygame.Rect(0, 0, 2, self.theme.text_size() - 1)
+
+    def __repr__(self):
+        return "Cursor(line:{}, column:{})".format(self.line, self.column)
 
     def update(self, document):
         line = document.get_current_line()
@@ -41,10 +45,8 @@ class Cursor:
                 moved = True
 
         elif direction == CursorDirection.DOWN:
-            if self.line < len(document.lines)-1:
+            if self.line < len(document.lines) - 1:
                 self.line += 1
                 moved = True
 
         return moved
-
-

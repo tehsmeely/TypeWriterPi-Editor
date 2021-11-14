@@ -25,9 +25,12 @@ class Document:
     def update(self):
         self.cursor.update(self)
 
+    def get_line(self, index):
+        if 0 <= index < len(self.lines):
+            return self.lines[index]
+
     def get_current_line(self):
-        if self.cursor.line < len(self.lines):
-            return self.lines[self.cursor.line]
+        return self.get_line(self.cursor.line)
 
     def insert_line(self, at, initial_content):
         self.lines.insert(at, Line(self.font, self.theme, initial_content))
@@ -37,7 +40,7 @@ class Document:
         Will not remove the 0th line if it has content
         """
         if keep_content and line_index > 0:
-            self.lines[line_index - 1].append_text(self.lines[line_index].content)
+            self.lines[line_index - 1].append_content(self.lines[line_index].content)
 
         if line_index == 0 and len(self.lines[line_index].content) > 0:
             return False
@@ -64,18 +67,24 @@ class Line:
 
     def add_text(self, insert_at, text):
         """Add text anywhere in a line"""
-        self.content.insert(insert_at, text)
-        self.dirty = True
-        return len(text)
+        print("Add text, {}->{}".format(text, insert_at))
+        if isinstance(text, str) and len(text) == 1:
+            self.content.insert(insert_at, text)
+            self.dirty = True
+            return len(text)
+        else:
+            raise ValueError("[add_text] only takes len 1 string")
 
-    def append_text(self, text):
-        """Add text to the end of a line"""
-        self.add_text(len(self.content), text)
+    def append_content(self, text):
+        """Add content to the end of a line"""
+        self.content.extend(text)
+        self.dirty = True
 
     def remove_at(self, index):
         index = clamp(index, 0, len(self.content) - 1)
         removed = self.content[index]
         del self.content[index]
+        self.dirty = True
         return removed
 
     def width_to_column(self, column):

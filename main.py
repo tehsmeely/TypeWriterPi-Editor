@@ -30,30 +30,40 @@ while True:
         elif event.type == TEXTINPUT:
             action = Action(ActionType.TEXT, event.text)
             action_handler.add_action(action, document)
-            print("Text Input: ", event.text)
+            print("Done Text Input: ", event.text)
         elif event.type == KEYDOWN:
             if event.key == K_RETURN:
                 action = Action(ActionType.ENTER, None)
                 action_handler.add_action(action, document)
-                print("Return")
+                print("Done Return")
             elif event.key in CURSOR_DIRECTIONS.keys():
                 action = Action(ActionType.MOVE, CURSOR_DIRECTIONS[event.key])
                 action_handler.add_action(action, document)
-                print("Move", CURSOR_DIRECTIONS[event.key])
+                print("Done Move", CURSOR_DIRECTIONS[event.key])
             elif event.key == K_BACKSPACE:
                 action = Action(ActionType.BACKSPACE, None)
                 action_handler.add_action(action, document)
-                print("Backspace")
+                print("Done Backspace")
             elif event.key == K_DELETE:
                 action = Action(ActionType.DELETE, None)
                 action_handler.add_action(action, document)
-                print("Delete")
+                print("Done Delete")
+            elif event.key == K_z:
+                if KMOD_CTRL & pygame.key.get_mods():
+                    action_handler.undo(document)
+                    print("Done Undo!")
             elif event.key == K_F1:
                 print(document)
                 print(document.lines)
                 for line in document.lines:
                     print(line)
                     print(line.content)
+            elif event.key == K_F2:
+                print(action_handler)
+                for event in action_handler.history:
+                    print(event)
+            elif event.key == K_F3:
+                print(document.cursor)
 
     screen.fill(theme.background_colour())
 
