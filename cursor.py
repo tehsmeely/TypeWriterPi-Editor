@@ -14,14 +14,14 @@ class Cursor:
     def __repr__(self):
         return "Cursor(line:{}, column:{})".format(self.line, self.column)
 
-    def update(self, document):
+    def update(self, document, disable):
         line = document.get_current_line()
         if line is not None:
             self.rect.x = document.left_margin + line.width_to_column(self.column)
         else:
             self.rect.x = 0
         self.rect.y = self.line * self.theme.text_size()
-        self.blinker.update()
+        self.blinker.update(disable)
 
     def draw(self, screen):
         if self.blinker.is_on():

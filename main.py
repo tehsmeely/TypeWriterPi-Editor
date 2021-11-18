@@ -1,74 +1,113 @@
 import pygame, sys
 from pygame.locals import *
 
-import themes, document
+import themes, config
+from document import Document
+from file_manager import FileManager
+from state import State
+from ui import Menu
 from action import ActionType, Action, ActionHandler, CURSOR_DIRECTIONS
-
-pygame.init()
-vec = pygame.math.Vector2  # 2 for two dimensional
+from utils import *
 
 SCREEN_DIMS = (800, 400)
 
-target_fps = 60
 
-clock = pygame.time.Clock()
+def main():
+    pygame.init()
 
-screen = pygame.display.set_mode(SCREEN_DIMS)
-pygame.display.set_caption("Editor")
+    screen_centre = SCREEN_DIMS[0] / 2, SCREEN_DIMS[1] / 2
 
-all_sprites = []
+    target_fps = 60
 
-theme = themes.Default()
-action_handler = ActionHandler()
-document = document.Document(theme)
+    clock = pygame.time.Clock()
 
-while True:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == TEXTINPUT:
-            action = Action(ActionType.TEXT, event.text)
-            action_handler.add_action(action, document)
-            print("Done Text Input: ", event.text)
-        elif event.type == KEYDOWN:
-            if event.key == K_RETURN:
-                action = Action(ActionType.ENTER, None)
-                action_handler.add_action(action, document)
-                print("Done Return")
-            elif event.key in CURSOR_DIRECTIONS.keys():
-                action = Action(ActionType.MOVE, CURSOR_DIRECTIONS[event.key])
-                action_handler.add_action(action, document)
-                print("Done Move", CURSOR_DIRECTIONS[event.key])
-            elif event.key == K_BACKSPACE:
-                action = Action(ActionType.BACKSPACE, None)
-                action_handler.add_action(action, document)
-                print("Done Backspace")
-            elif event.key == K_DELETE:
-                action = Action(ActionType.DELETE, None)
-                action_handler.add_action(action, document)
-                print("Done Delete")
-            elif event.key == K_z:
-                if KMOD_CTRL & pygame.key.get_mods():
-                    action_handler.undo(document)
-                    print("Done Undo!")
-            elif event.key == K_F1:
-                print(document)
-                print(document.lines)
-                for line in document.lines:
-                    print(line)
-                    print(line.content)
-            elif event.key == K_F2:
-                print(action_handler)
-                for event in action_handler.history:
-                    print(event)
-            elif event.key == K_F3:
-                print(document.cursor)
+    screen = pygame.display.set_mode(SCREEN_DIMS)
+    pygame.display.set_caption("Editor")
 
-    screen.fill(theme.background_colour())
+    # general_config = config.load_config()
+    # file_manager = FileManager(general_config)
+    # theme = themes.Default()
+    # action_handler = ActionHandler()
+    # document = Document(theme)
+    state = State(screen_centre)
 
-    document.update()
-    document.draw(screen)
+    while state.running:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == TEXTINPUT and state.menu is None:
+                action = Action(ActionType.TEXT, event.text)
+                state.action_handler.add_action(action, state.document)
+                print("Done Text Input: ", event.text)
+            elif event.type == KEYDOWN:
+                if state.menu is None:
+                    if event.key == K_RETURN:
+                        action = Action(ActionType.ENTER, None)
+                        state.action_handler.add_action(action, state.document)
+                        print("Done Return")
+                    elif event.key in CURSOR_DIRECTIONS.keys():
+                        action = Action(ActionType.MOVE, CURSOR_DIRECTIONS[event.key])
+                        state.action_handler.add_action(action, state.document)
+                        print("Done Move", CURSOR_DIRECTIONS[event.key])
+                    elif event.key == K_BACKSPACE:
+                        action = Action(ActionType.BACKSPACE, None)
+                        state.action_handler.add_action(action, state.document)
+                        print("Done Backspace")
+                    elif event.key == K_DELETE:
+                        action = Action(ActionType.DELETE, None)
+                        state.action_handler.add_action(action, state.document)
+                        print("Done Delete")
+                    elif event.key == K_z:
+                        if KMOD_CTRL & pygame.key.get_mods():
+                            state.action_handler.undo(state.document)
+                            print("Done Undo!")
+                else:
+                    if event.key == K_DOWN:
+                        state.menu.move(1)
+                    elif event.key == K_UP:
+                        state.menu.move(-1)
+                    elif event.key == K_RETURN:
+                        print(state.execute_menu())
+                    elif event.key == K_ESCAPE:
+                        state.menu = None
 
-    pygame.display.update()
-    clock.tick(target_fps)
+                if event.key == K_F1:
+                    print(state.document)
+                    print(state.document.lines)
+                    for line in state.document.lines:
+                        print(line)
+                        print(line.content)
+                elif event.key == K_F2:
+                    print(state.action_handler)
+                    for event in state.action_handler.history:
+                        print(event)
+                elif event.key == K_F3:
+                    print(state.document.cursor)
+                elif event.key == K_F4:
+                    print("Creating Menu")
+                    state.menu = Menu(
+                        [
+                            ("RESUME", Curry(state.close_menu)),
+                            ("EXIT", Curry(state.stop)),
+                            ("LOAD", Curry(state.load)),
+                        ],
+                        state.theme,
+                        screen_centre,
+                    )
+                    print("Menu Created")
+
+        screen.fill(state.theme.background_colour())
+
+        state.update()
+        state.document.draw(screen)
+
+        if state.menu is not None:
+            state.menu.draw(screen)
+
+        pygame.display.update()
+        clock.tick(target_fps)
+
+
+if __name__ == "__main__":
+    main()

@@ -5,9 +5,8 @@ from utils import *
 
 class Document:
     def __init__(self, theme):
-        self.font = pygame.font.Font(None, theme.text_size())
         self.theme = theme
-        self.lines = [Line(self.font, theme)]
+        self.lines = [Line(theme)]
         self.cursor = Cursor(self.theme)
 
         self.left_margin = 5
@@ -22,8 +21,8 @@ class Document:
 
         self.cursor.draw(screen)
 
-    def update(self):
-        self.cursor.update(self)
+    def update(self, cursor_disable=False):
+        self.cursor.update(self, cursor_disable)
 
     def get_line(self, index):
         if 0 <= index < len(self.lines):
@@ -33,7 +32,10 @@ class Document:
         return self.get_line(self.cursor.line)
 
     def insert_line(self, at, initial_content):
-        self.lines.insert(at, Line(self.font, self.theme, initial_content))
+        self.lines.insert(at, Line(self.theme, initial_content))
+
+    def append_line(self, initial_content):
+        self.insert_line(len(self.lines), initial_content)
 
     def remove_line(self, line_index, keep_content=True):
         """Removes a line, optionally appending its content to the line above
@@ -48,13 +50,23 @@ class Document:
             del self.lines[line_index]
             return True
 
+    def to_content_iter(self):
+        return ("".join(line.content) for line in self.lines)
+
+    def clear(self, hard=False):
+        if hard:
+            self.lines = []
+        else:
+            self.lines = [Line(self.theme)]
+        self.cursor.line = 0
+        self.cursor.column = 0
+
 
 class Line:
-    def __init__(self, font, theme, initial_content=None):
+    def __init__(self, theme, initial_content=None):
         if initial_content is None:
             initial_content = []
         self.content = initial_content
-        self.font = font
         self.theme = theme
         self.dirty = False
         self.texture = None
@@ -89,13 +101,13 @@ class Line:
 
     def width_to_column(self, column):
         # if column > len content it is just fine
-        return self.font.size("".join(self.content[:column]))[0]
+        return self.theme.font().size("".join(self.content[:column]))[0]
 
     def set_content(self, new_content):
         self.dirty = True
         self.content = new_content
 
     def make_texture(self):
-        self.texture = self.font.render(
+        self.texture = self.theme.font().render(
             "".join(self.content), True, self.theme.text_colour()
         )

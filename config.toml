@@ -1,0 +1,5 @@
+theme = "default"
+
+[files]
+    file_directory="var"
+    temp_file_path="var/tmp.tmp"
