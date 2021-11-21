@@ -1,11 +1,15 @@
-import toml
+import toml, os
 
-CONFIG_PATH = "config.toml"
+PATH_ENV_NAME = "TWE_CONFIG_PATH"
+DEFAULT_CONFIG_PATH = "config.toml"
+
 EXPECTED_KEYS = [
     ["files"],
     ["files", "file_directory"],
     ["files", "temp_file_path"],
     ["theme"],
+    ["display"],
+    ["display", "fullscreen"],
 ]
 
 
@@ -31,8 +35,17 @@ def _assert_keys_present(d):
         raise Exception("Config is missing keys:", keys_not_present)
 
 
+def _get_config_path():
+    from_env = os.getenv(PATH_ENV_NAME)
+    if from_env is not None:
+        return from_env
+    else:
+        return DEFAULT_CONFIG_PATH
+
+
 def load_config():
-    with open(CONFIG_PATH) as f:
+    config_path = _get_config_path()
+    with open(config_path) as f:
         conf = toml.load(f)
     _assert_keys_present(conf)
     return conf

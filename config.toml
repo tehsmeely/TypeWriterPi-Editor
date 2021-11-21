@@ -1,5 +1,9 @@
 theme = "default"
 
 [files]
-    file_directory="var"
-    temp_file_path="var/tmp.tmp"
+    file_directory = "var"
+    temp_file_path = "var/tmp.tmp"
+
+[display]
+    fullscreen = false
+
