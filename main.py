@@ -1,13 +1,10 @@
 import pygame, sys
 from pygame.locals import *
 
-import themes, config
-from document import Document
-from file_manager import FileManager
 from state import State
-from ui import Menu
-from action import ActionType, Action, ActionHandler, CURSOR_DIRECTIONS
-from utils import *
+from core.ui import Menu
+from action import ActionType, Action, CURSOR_DIRECTIONS
+from core.utils import *
 
 SCREEN_DIMS = (800, 400)
 
@@ -21,15 +18,9 @@ def main():
 
     clock = pygame.time.Clock()
 
-    screen = pygame.display.set_mode(SCREEN_DIMS)
-    pygame.display.set_caption("Editor")
-
-    # general_config = config.load_config()
-    # file_manager = FileManager(general_config)
-    # theme = themes.Default()
-    # action_handler = ActionHandler()
-    # document = Document(theme)
     state = State(screen_centre)
+    screen = pygame.display.set_mode(SCREEN_DIMS, flags=state.get_display_flags())
+    pygame.display.set_caption("Editor")
 
     while state.running:
         for event in pygame.event.get():
@@ -96,6 +87,9 @@ def main():
                         screen_centre,
                     )
                     print("Menu Created")
+                elif event.key == K_F5:
+                    res = pygame.display.toggle_fullscreen()
+                    print("Toggled Fullscreen: {}".format(res))
 
         screen.fill(state.theme.background_colour())
 

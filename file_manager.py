@@ -1,5 +1,5 @@
 import os.path
-from timer import Timer
+from core.timer import Timer
 
 swap_suffix = ".swp"
 EXTENSION = ".txt"

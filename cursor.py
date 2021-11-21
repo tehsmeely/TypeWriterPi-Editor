@@ -1,5 +1,5 @@
 import pygame
-from blinker import Blinker
+from core.blinker import Blinker
 from action import CursorDirection
 
 

@@ -1,6 +1,5 @@
 from cursor import Cursor
-import pygame.font
-from utils import *
+from core.utils import *
 
 
 class Document:

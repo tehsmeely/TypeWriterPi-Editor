@@ -1,10 +1,10 @@
-import config
+import config, pygame
 from file_manager import FileManager, EXTENSION
 from themes import theme_from_config
 from action import ActionHandler
 from document import Document
-from ui import Menu
-from utils import *
+from core.ui import Menu
+from core.utils import *
 
 
 class State:
@@ -17,6 +17,12 @@ class State:
         self.document = Document(self.theme)
         self.menu = None
         self.screen_centre = screen_centre
+
+    def get_display_flags(self):
+        if self.general_config["display"]["fullscreen"]:
+            return pygame.FULLSCREEN | pygame.NOFRAME
+        else:
+            return 0
 
     def update(self):
         self.document.update(cursor_disable=(self.menu is not None))
