@@ -17,8 +17,14 @@ class Menu:
         if 0 <= new_index < len(self.options):
             self.active_index = new_index
 
+    def reset(self):
+        self.active_index = 0
+
     def execute(self):
-        return self.options[self.active_index].callback()
+        return self.options[self.active_index].callback.call()
+
+    def should_close_on_execute(self):
+        return self.options[self.active_index].callback.close_on_call
 
     def draw(self, screen):
         y0 = self.background_rect.top + self.padding
@@ -41,6 +47,15 @@ class Menu:
         fill_rect.center = (width / 2, height / 2)
         background.fill(theme.background_colour(), fill_rect)
         return background, pygame.Rect((0, 0), (width, height))
+
+
+class OptionCallback:
+    def __init__(self, f, close_on_call=True):
+        self.f = f
+        self.close_on_call = close_on_call
+
+    def call(self):
+        return self.f()
 
 
 class Option:

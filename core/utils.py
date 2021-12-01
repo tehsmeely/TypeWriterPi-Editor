@@ -1,6 +1,15 @@
+from math import ceil
+
+
 def clamp(n, smallest, largest):
     """Clamp a value within [smallest] and [largest] inclusive"""
     return max(smallest, min(n, largest))
+
+
+def make_chunks(lst, n):
+    num_chunks = ceil(len(lst) / n)
+    chunks = [lst[i : i + n] for i in range(0, len(lst), n)]
+    return num_chunks, chunks
 
 
 class Curry:

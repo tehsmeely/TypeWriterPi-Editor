@@ -54,14 +54,12 @@ def main():
                             state.action_handler.undo(state.document)
                             print("Done Undo!")
                 else:
-                    if event.key == K_DOWN:
-                        state.menu.move(1)
-                    elif event.key == K_UP:
-                        state.menu.move(-1)
+                    if event.key in [K_UP, K_DOWN, K_LEFT, K_RIGHT]:
+                        state.menu.handle_arrow(event.key)
                     elif event.key == K_RETURN:
-                        print(state.execute_menu())
+                        state.menu.handle_enter()
                     elif event.key == K_ESCAPE:
-                        state.menu = None
+                        state.menu.handle_escape()
 
                 if event.key == K_F1:
                     print(state.document)
@@ -76,17 +74,7 @@ def main():
                 elif event.key == K_F3:
                     print(state.document.cursor)
                 elif event.key == K_F4:
-                    print("Creating Menu")
-                    state.menu = Menu(
-                        [
-                            ("RESUME", Curry(state.close_menu)),
-                            ("EXIT", Curry(state.stop)),
-                            ("LOAD", Curry(state.load)),
-                        ],
-                        state.theme,
-                        screen_centre,
-                    )
-                    print("Menu Created")
+                    state.menu.open_main()
                 elif event.key == K_F5:
                     res = pygame.display.toggle_fullscreen()
                     print("Toggled Fullscreen: {}".format(res))
@@ -96,8 +84,7 @@ def main():
         state.update()
         state.document.draw(screen)
 
-        if state.menu is not None:
-            state.menu.draw(screen)
+        state.menu.draw(screen)
 
         pygame.display.update()
         clock.tick(target_fps)

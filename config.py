@@ -10,6 +10,8 @@ EXPECTED_KEYS = [
     ["theme"],
     ["display"],
     ["display", "fullscreen"],
+    ["system"],
+    ["system", "power_control_enabled"]
 ]
 
 

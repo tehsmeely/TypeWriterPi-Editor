@@ -7,3 +7,6 @@ theme = "default"
 [display]
     fullscreen = false
 
+[system]
+    power_control_enabled = false
+
