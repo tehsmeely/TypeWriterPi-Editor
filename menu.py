@@ -23,6 +23,9 @@ class MenuRoot:
         self.file_picker_page, self.file_picker = _create_file_picker(self.state, 0)
         self.system_menu = _create_system_menu(self.state, self)
 
+    def is_open(self):
+        return self.current_menu_type != MenuType.NONE
+
     def _get_menu(self):
         if self.current_menu_type == MenuType.MAIN:
             return self.main_menu
@@ -84,10 +87,6 @@ def _create_main_menu(state, menu_root):
         [
             ("RESUME", OptionCallback(Curry(menu_root.close_menu))),
             ("EXIT", OptionCallback(Curry(state.stop))),
-            (
-                "NEW",
-                OptionCallback(Curry(menu_root.open_file_input), close_on_call=False),
-            ),
             (
                 "LOAD",
                 OptionCallback(Curry(menu_root.open_file_picker), close_on_call=False),

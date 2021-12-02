@@ -32,6 +32,9 @@ class State:
         print("Stopping")
         self.running = False
 
+    def no_menu_open(self):
+        return not self.menu.is_open()
+
     def _power_control_enabled(self):
         return self.general_config["system"]["power_control_enabled"]
 

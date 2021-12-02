@@ -27,12 +27,13 @@ def main():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == TEXTINPUT and state.menu is None:
-                action = Action(ActionType.TEXT, event.text)
-                state.action_handler.add_action(action, state.document)
-                print("Done Text Input: ", event.text)
-            elif event.type == KEYDOWN:
-                if state.menu is None:
+
+            if state.no_menu_open():
+                if event.type == TEXTINPUT:
+                    action = Action(ActionType.TEXT, event.text)
+                    state.action_handler.add_action(action, state.document)
+                    print("Done Text Input: ", event.text)
+                elif event.type == KEYDOWN:
                     if event.key == K_RETURN:
                         action = Action(ActionType.ENTER, None)
                         state.action_handler.add_action(action, state.document)
@@ -53,7 +54,8 @@ def main():
                         if KMOD_CTRL & pygame.key.get_mods():
                             state.action_handler.undo(state.document)
                             print("Done Undo!")
-                else:
+            else:
+                if event.type == KEYDOWN:
                     if event.key in [K_UP, K_DOWN, K_LEFT, K_RIGHT]:
                         state.menu.handle_arrow(event.key)
                     elif event.key == K_RETURN:
@@ -61,6 +63,7 @@ def main():
                     elif event.key == K_ESCAPE:
                         state.menu.handle_escape()
 
+            if event.type == KEYDOWN:
                 if event.key == K_F1:
                     print(state.document)
                     print(state.document.lines)
