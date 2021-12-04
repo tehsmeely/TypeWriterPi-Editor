@@ -3,7 +3,7 @@ import enum
 import pygame
 
 from core.utils import *
-from core.ui import Menu, OptionCallback
+from core.ui import Menu, OptionCallback, TextBox
 from file_manager import EXTENSION
 
 
@@ -12,6 +12,7 @@ class MenuType(enum.Enum):
     MAIN = 2
     FILE_PICKER = 3
     SYSTEM = 4
+    TEXT_INPUT = 5
 
 
 class MenuRoot:
@@ -22,6 +23,7 @@ class MenuRoot:
         self.main_menu = _create_main_menu(self.state, self)
         self.file_picker_page, self.file_picker = _create_file_picker(self.state, 0)
         self.system_menu = _create_system_menu(self.state, self)
+        self.file_input = _create_file_input(self.state)
 
     def is_open(self):
         return self.current_menu_type != MenuType.NONE
@@ -33,6 +35,8 @@ class MenuRoot:
             return self.file_picker
         elif self.current_menu_type == MenuType.SYSTEM:
             return self.system_menu
+        elif self.current_menu_type == MenuType.TEXT_INPUT:
+            return self.file_input
         else:
             return None
 
@@ -40,6 +44,14 @@ class MenuRoot:
         current_menu = self._get_menu()
         if current_menu is not None:
             current_menu.draw(screen)
+
+    def handle_text(self, text):
+        if self.current_menu_type == MenuType.TEXT_INPUT:
+            self.file_input.add_text(text)
+
+    def handle_backspace(self):
+        if self.current_menu_type == MenuType.TEXT_INPUT:
+            self.file_input.backspace()
 
     def handle_arrow(self, arrow):
         current_menu = self._get_menu()
@@ -78,6 +90,10 @@ class MenuRoot:
         self.file_picker_page, self.file_picker = _create_file_picker(self.state, 0)
         self.current_menu_type = MenuType.FILE_PICKER
 
+    def open_file_input(self):
+        self.file_input.reset()
+        self.current_menu_type = MenuType.TEXT_INPUT
+
     def open_system_menu(self):
         self.current_menu_type = MenuType.SYSTEM
 
@@ -88,8 +104,19 @@ def _create_main_menu(state, menu_root):
             ("RESUME", OptionCallback(Curry(menu_root.close_menu))),
             ("EXIT", OptionCallback(Curry(state.stop))),
             (
+                "SAVE",
+                OptionCallback(
+                    Curry(state.file_manager.manual_save, state.document),
+                    close_on_call=True,
+                ),
+            ),
+            (
                 "LOAD",
                 OptionCallback(Curry(menu_root.open_file_picker), close_on_call=False),
+            ),
+            (
+                "NEW",
+                OptionCallback(Curry(menu_root.open_file_input), close_on_call=False),
             ),
             (
                 "SYSTEM",
@@ -128,3 +155,18 @@ def _create_file_picker(state, page):
     ]
     menu = Menu(file_options, state.theme, state.screen_centre)
     return page, menu
+
+
+def on_file_input_execute(state, filename):
+    if type(filename) is not str:
+        raise Exception(
+            "Filename must be a str, is the curried function applied backwards?"
+        )
+    file_valid = state.file_manager.try_new_file(filename, state.document)
+    return file_valid
+
+
+def _create_file_input(state):
+    return TextBox(
+        state.theme, state.screen_centre, Curry(on_file_input_execute, state)
+    )

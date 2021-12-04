@@ -55,13 +55,17 @@ def main():
                             state.action_handler.undo(state.document)
                             print("Done Undo!")
             else:
-                if event.type == KEYDOWN:
+                if event.type == TEXTINPUT:
+                    state.menu.handle_text(event.text)
+                elif event.type == KEYDOWN:
                     if event.key in [K_UP, K_DOWN, K_LEFT, K_RIGHT]:
                         state.menu.handle_arrow(event.key)
                     elif event.key == K_RETURN:
                         state.menu.handle_enter()
                     elif event.key == K_ESCAPE:
                         state.menu.handle_escape()
+                    elif event.key == K_BACKSPACE:
+                        state.menu.handle_backspace()
 
             if event.type == KEYDOWN:
                 if event.key == K_F1:

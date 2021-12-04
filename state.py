@@ -25,7 +25,7 @@ class State:
             return 0
 
     def update(self):
-        self.document.update(cursor_disable=(self.menu is not None))
+        self.document.update(cursor_disable=(self.menu.is_open()))
         self.file_manager.update(self.document)
 
     def stop(self):

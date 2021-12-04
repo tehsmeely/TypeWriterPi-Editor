@@ -68,3 +68,20 @@ class FileManager:
             files = [f.name for f in scan_dir if f.is_file()]
         files = [f for f in files if f.endswith(EXTENSION)]
         return files
+
+    def try_new_file(self, filename, document):
+        if filename == "":
+            return False
+        existing_files = self.find_files()
+        if filename in existing_files:
+            return False
+
+        if not filename.endswith(EXTENSION):
+            filename += EXTENSION
+        filepath = os.path.join(self.config["file_directory"], filename)
+        file = TargetFile(filepath)
+        if self.current_file is None:
+            # Special case, no open file already but user may want changes to be applied to new file
+            file.save_content(document.to_content_iter(), to_swap=False)
+        self.current_file = file
+        return True
