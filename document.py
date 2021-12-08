@@ -3,16 +3,18 @@ from core.utils import *
 
 
 class Document:
-    def __init__(self, theme):
+    def __init__(self, theme, display_dims):
         self.theme = theme
         self.lines = [Line(theme)]
         self.cursor = Cursor(self.theme)
 
         self.left_margin = 5
+        self.top_line = 0
+        self.lines_visible = ceil(float(display_dims[1]) / self.theme.text_size())
 
     def draw(self, screen):
         y = 4
-        for line in self.lines:
+        for line in self.lines[self.top_line : self.top_line + self.lines_visible]:
             if line.dirty:
                 line.make_texture()
             screen.blit(line.texture, (self.left_margin, y))
@@ -21,6 +23,10 @@ class Document:
         self.cursor.draw(screen)
 
     def update(self, cursor_disable=False):
+        if self.cursor.line >= self.top_line + self.lines_visible - 2:
+            self.top_line += 1
+        elif self.cursor.line < self.top_line:
+            self.top_line -= 1
         self.cursor.update(self, cursor_disable)
 
     def get_line(self, index):
@@ -74,6 +80,7 @@ class Line:
     def truncate(self, truncate_from):
         ret = self.content[truncate_from:]
         self.content = self.content[:truncate_from]
+        self.dirty = True
         return ret
 
     def add_text(self, insert_at, text):

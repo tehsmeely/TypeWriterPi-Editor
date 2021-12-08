@@ -2,10 +2,12 @@ import pygame
 
 
 class StatusBar:
-    def __init__(self, width, topleft, theme):
+    def __init__(self, screen_dims, theme):
         self.padding = 1
+        width = screen_dims[0]
         height = theme.small_font().size("|")[1] + (2 * self.padding)
-        self.rect = pygame.Rect(topleft, (width, height))
+        self.rect = pygame.Rect((0, 0), (width, height))
+        self.rect.bottomleft = (0, screen_dims[1])
         self.surface = pygame.Surface((width, height))
         self.theme = theme
         self.surface.fill(self.theme.text_colour())

@@ -1,4 +1,0 @@
-
-* Status Bar
-
-* Scrolling

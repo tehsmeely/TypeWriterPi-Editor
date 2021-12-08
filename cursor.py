@@ -14,10 +14,8 @@ class Cursor:
     def __repr__(self):
         return "Cursor(line:{}, column:{})".format(self.line, self.column)
 
-
     def to_status_string(self):
         return "{}:{}".format(self.line, self.column)
-
 
     def update(self, document, disable):
         line = document.get_current_line()
@@ -25,7 +23,7 @@ class Cursor:
             self.rect.x = document.left_margin + line.width_to_column(self.column)
         else:
             self.rect.x = 0
-        self.rect.y = self.line * self.theme.text_size()
+        self.rect.y = (self.line - document.top_line) * self.theme.text_size()
         self.blinker.update(disable)
 
     def draw(self, screen):

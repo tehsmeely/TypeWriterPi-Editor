@@ -15,12 +15,10 @@ class State:
         self.running = True
         self.general_config = config.load_config()
         self.theme = theme_from_config(self.general_config)
-        self.status_bar = StatusBar(
-            screen_dims[0], (0, screen_dims[1] - 20), self.theme
-        )
+        self.status_bar = StatusBar(screen_dims, self.theme)
         self.file_manager = FileManager(self.general_config)
         self.action_handler = ActionHandler()
-        self.document = Document(self.theme)
+        self.document = Document(self.theme, screen_dims)
         self.menu = MenuRoot(self)
 
     def get_display_flags(self):

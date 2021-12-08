@@ -19,6 +19,7 @@ def main():
     state = State(SCREEN_DIMS)
     screen = pygame.display.set_mode(SCREEN_DIMS, flags=state.get_display_flags())
     pygame.display.set_caption("Editor")
+    pygame.key.set_repeat(300, 100)
 
     while state.running:
         for event in pygame.event.get():
@@ -30,28 +31,22 @@ def main():
                 if event.type == TEXTINPUT:
                     action = Action(ActionType.TEXT, event.text)
                     state.action_handler.add_action(action, state.document)
-                    print("Done Text Input: ", event.text)
                 elif event.type == KEYDOWN:
                     if event.key == K_RETURN:
                         action = Action(ActionType.ENTER, None)
                         state.action_handler.add_action(action, state.document)
-                        print("Done Return")
                     elif event.key in CURSOR_DIRECTIONS.keys():
                         action = Action(ActionType.MOVE, CURSOR_DIRECTIONS[event.key])
                         state.action_handler.add_action(action, state.document)
-                        print("Done Move", CURSOR_DIRECTIONS[event.key])
                     elif event.key == K_BACKSPACE:
                         action = Action(ActionType.BACKSPACE, None)
                         state.action_handler.add_action(action, state.document)
-                        print("Done Backspace")
                     elif event.key == K_DELETE:
                         action = Action(ActionType.DELETE, None)
                         state.action_handler.add_action(action, state.document)
-                        print("Done Delete")
                     elif event.key == K_z:
                         if KMOD_CTRL & pygame.key.get_mods():
                             state.action_handler.undo(state.document)
-                            print("Done Undo!")
             else:
                 if event.type == TEXTINPUT:
                     state.menu.handle_text(event.text)
