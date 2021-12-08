@@ -145,7 +145,7 @@ def _create_file_picker(state, page):
     page_size = 8
     num_chunks, chunks = make_chunks(files, page_size)
     if len(chunks) == 0:
-        options = ["No Files Found", OptionCallback(lambda: None)]
+        options = [("No Files Found", OptionCallback(lambda: None))]
     else:
         page = clamp(page, 0, num_chunks - 1)
         files = chunks[page]
