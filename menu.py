@@ -144,16 +144,21 @@ def _create_file_picker(state, page):
     files = state.file_manager.find_files()
     page_size = 8
     num_chunks, chunks = make_chunks(files, page_size)
-    page = clamp(page, 0, num_chunks - 1)
-    files = chunks[page]
-    file_options = [
-        (
-            file.removesuffix(EXTENSION),
-            OptionCallback(Curry(state.file_manager.load_file, file, state.document)),
-        )
-        for file in files
-    ]
-    menu = Menu(file_options, state.theme, state.screen_centre)
+    if len(chunks) == 0:
+        options = ["No Files Found", OptionCallback(lambda: None)]
+    else:
+        page = clamp(page, 0, num_chunks - 1)
+        files = chunks[page]
+        options = [
+            (
+                file.removesuffix(EXTENSION),
+                OptionCallback(
+                    Curry(state.file_manager.load_file, file, state.document)
+                ),
+            )
+            for file in files
+        ]
+    menu = Menu(options, state.theme, state.screen_centre)
     return page, menu
 
 
