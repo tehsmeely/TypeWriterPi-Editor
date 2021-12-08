@@ -87,6 +87,7 @@ def apply_action__enter(
     action: Action, document: Document, move_cursor: bool = True
 ) -> Optional[Action]:
     print("Enter: Newline")
+    ## TODO: Delete to right of cursor???
     line = document.get_current_line()
     if line is not None:
         cut_at = min(len(line.content), document.cursor.column)

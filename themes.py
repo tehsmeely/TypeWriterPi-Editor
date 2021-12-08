@@ -6,9 +6,11 @@ class _Theme:
     _text_colour = (255, 255, 255)
     _text_size = 22
     _big_text_size = 42
+    _small_text_size = 20
 
     def __init__(self):
         self._font = pygame.font.Font(None, self._text_size)
+        self._small_font = pygame.font.Font(None, self._small_text_size)
         self._big_font = pygame.font.Font(None, self._big_text_size)
 
     def background_colour(self):
@@ -25,6 +27,9 @@ class _Theme:
 
     def big_font(self):
         return self._big_font
+
+    def small_font(self):
+        return self._small_font
 
 
 class Default(_Theme):

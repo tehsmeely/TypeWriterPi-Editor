@@ -12,13 +12,11 @@ SCREEN_DIMS = (800, 400)
 def main():
     pygame.init()
 
-    screen_centre = SCREEN_DIMS[0] / 2, SCREEN_DIMS[1] / 2
-
     target_fps = 60
 
     clock = pygame.time.Clock()
 
-    state = State(screen_centre)
+    state = State(SCREEN_DIMS)
     screen = pygame.display.set_mode(SCREEN_DIMS, flags=state.get_display_flags())
     pygame.display.set_caption("Editor")
 
@@ -89,9 +87,7 @@ def main():
         screen.fill(state.theme.background_colour())
 
         state.update()
-        state.document.draw(screen)
-
-        state.menu.draw(screen)
+        state.draw(screen)
 
         pygame.display.update()
         clock.tick(target_fps)

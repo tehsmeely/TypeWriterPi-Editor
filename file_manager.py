@@ -56,6 +56,12 @@ class FileManager:
             save_content(self.config["temp_file_path"], document.to_content_iter())
             self.tmp_timer.drain()
 
+    def to_status_string(self):
+        if self.current_file is None:
+            return "No Open File"
+        else:
+            return os.path.basename(self.current_file.filepath)
+
     def load_file(self, filename, document):
         filepath = os.path.join(self.config["file_directory"], filename)
         file = TargetFile(filepath)
