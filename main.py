@@ -6,7 +6,7 @@ from core.ui import Menu
 from action import ActionType, Action, CURSOR_DIRECTIONS
 from core.utils import *
 
-SCREEN_DIMS = (800, 400)
+SCREEN_DIMS = (800, 480)
 
 
 def main():
